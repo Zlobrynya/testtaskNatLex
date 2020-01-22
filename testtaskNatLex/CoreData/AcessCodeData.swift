@@ -8,7 +8,7 @@
 
 import UIKit
 import CoreData
-
+import RxSwift
 
 class AcessCodeData {
     //CoreDate
@@ -58,6 +58,32 @@ class AcessCodeData {
             return weathrs
         } catch {}
         return [ModelWeather]()
+    }
+    
+    func getWeatherHistory(city: String) -> Observable<[ModelWeather]>{
+        return Observable<[ModelWeather]>.create({observer in
+            var arrayWeather = [ModelWeather]()
+            let request: NSFetchRequest<Weather> = Weather.fetchRequest()
+            request.predicate = NSPredicate(format: "city = %@", city)
+            request.sortDescriptors = [NSSortDescriptor(key: "time", ascending: true, selector: nil)]
+            
+            do {
+                let lists = try self.context.fetch(request)
+                for item in lists{
+                    var modelWeather = ModelWeather()
+                    modelWeather.name = item.city ?? ""
+                    modelWeather.temp = item.temp
+                    modelWeather.tempMax = item.max_temp
+                    modelWeather.tempMin = item.min_temp
+                    modelWeather.time = item.time ?? Date()
+                    modelWeather.countUnique = lists.count
+                    arrayWeather.append(modelWeather)
+                }
+                observer.onNext(arrayWeather)
+                observer.onCompleted()
+            } catch {}
+            return Disposables.create();
+        })
     }
     
     private func getLastWeather(city: String) -> ModelWeather?{

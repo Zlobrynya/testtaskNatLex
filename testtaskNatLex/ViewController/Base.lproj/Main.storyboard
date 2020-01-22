@@ -173,6 +173,61 @@
             </objects>
             <point key="canvasLocation" x="-284.05797101449275" y="103.79464285714285"/>
         </scene>
+        <!--ChartVC-->
+        <scene sceneID="iJK-Aw-Lj6">
+            <objects>
+                <viewController storyboardIdentifier="ChartVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="hmQ-7P-dkO" customClass="ChartVC" customModule="testtaskNatLex" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="UiK-Xq-hg5">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q50-nx-gCZ" customClass="LineChartView" customModule="Charts">
+                                <rect key="frame" x="20" y="64" width="374" height="658"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dTy-KT-mwf">
+                                <rect key="frame" x="20" y="742" width="374" height="30"/>
+                                <state key="normal" title="Button"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1xg-j5-lTx">
+                                <rect key="frame" x="20" y="792" width="374" height="30"/>
+                                <state key="normal" title="Button"/>
+                            </button>
+                            <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="45x-dr-uuF">
+                                <rect key="frame" x="0.0" y="680" width="414" height="216"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </pickerView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="c4d-hX-T6T" firstAttribute="bottom" secondItem="1xg-j5-lTx" secondAttribute="bottom" constant="40" id="1Ip-tU-t2w"/>
+                            <constraint firstItem="1xg-j5-lTx" firstAttribute="leading" secondItem="c4d-hX-T6T" secondAttribute="leading" constant="20" id="DNH-gT-mGB"/>
+                            <constraint firstAttribute="bottom" secondItem="45x-dr-uuF" secondAttribute="bottom" id="KML-Be-7Eq"/>
+                            <constraint firstItem="dTy-KT-mwf" firstAttribute="leading" secondItem="c4d-hX-T6T" secondAttribute="leading" constant="20" id="N76-j3-jAF"/>
+                            <constraint firstItem="c4d-hX-T6T" firstAttribute="trailing" secondItem="45x-dr-uuF" secondAttribute="trailing" id="Q45-Mb-dxs"/>
+                            <constraint firstItem="1xg-j5-lTx" firstAttribute="top" secondItem="dTy-KT-mwf" secondAttribute="bottom" constant="20" id="RiY-tV-hBx"/>
+                            <constraint firstItem="dTy-KT-mwf" firstAttribute="top" secondItem="q50-nx-gCZ" secondAttribute="bottom" constant="20" id="V5T-sO-RXb"/>
+                            <constraint firstItem="45x-dr-uuF" firstAttribute="leading" secondItem="UiK-Xq-hg5" secondAttribute="leading" id="aoT-DS-wl8"/>
+                            <constraint firstItem="c4d-hX-T6T" firstAttribute="trailing" secondItem="1xg-j5-lTx" secondAttribute="trailing" constant="20" id="hZ4-x6-jpV"/>
+                            <constraint firstItem="c4d-hX-T6T" firstAttribute="trailing" secondItem="q50-nx-gCZ" secondAttribute="trailing" constant="20" id="r0S-cG-pi2"/>
+                            <constraint firstItem="q50-nx-gCZ" firstAttribute="leading" secondItem="c4d-hX-T6T" secondAttribute="leading" constant="20" id="rtt-fJ-tHW"/>
+                            <constraint firstItem="c4d-hX-T6T" firstAttribute="trailing" secondItem="dTy-KT-mwf" secondAttribute="trailing" constant="20" id="uef-f6-Gfd"/>
+                            <constraint firstItem="q50-nx-gCZ" firstAttribute="top" secondItem="c4d-hX-T6T" secondAttribute="top" constant="20" id="vau-cH-lF5"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="c4d-hX-T6T"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="tAG-Fv-bUm"/>
+                    <connections>
+                        <outlet property="buttonEnd" destination="1xg-j5-lTx" id="Mfw-0Y-1UH"/>
+                        <outlet property="buttonStart" destination="dTy-KT-mwf" id="w0I-sZ-qTP"/>
+                        <outlet property="chartView" destination="q50-nx-gCZ" id="UYd-f4-29f"/>
+                        <outlet property="datePicker" destination="45x-dr-uuF" id="UO8-Cq-6vk"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="92G-1B-cBa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="488" y="104"/>
+        </scene>
     </scenes>
     <resources>
         <image name="doc.plaintext" catalog="system" width="56" height="64"/>

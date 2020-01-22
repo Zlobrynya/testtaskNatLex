@@ -11,6 +11,11 @@ import RxCocoa
 import RxSwift
 import CoreLocation
 
+protocol ClickDetals {
+    func clickDetals(name: String)
+}
+
+
 class MainVC: UIViewController {
     @IBOutlet weak var labelNameCity: UILabel!
     @IBOutlet weak var labelTemperature: UILabel!
@@ -36,6 +41,7 @@ class MainVC: UIViewController {
         tableView.rx.setDelegate(self).disposed(by: disposeBag)
         vm.lastModelsWeather?.bind(to: tableView.rx.items(cellIdentifier: "infoCell")){ row, model, cell in
             if let cell = cell as? InfoTableViewCell{
+                cell.delegate = self
                 cell.setData(model: model, isF: self.isF)
             }
         }.disposed(by: disposeBag)
@@ -136,5 +142,15 @@ extension MainVC: CLLocationManagerDelegate{
 extension MainVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 64
+    }
+}
+
+extension MainVC: ClickDetals{
+    func clickDetals(name: String) {
+        if let vc = self.storyboard?.instantiateViewController(withIdentifier: "ChartVC") as? ChartVC{
+            print("nameCity \(name)")
+            vc.nameCity = name
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 }

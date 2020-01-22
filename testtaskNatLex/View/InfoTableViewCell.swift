@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import RxCocoa
 
 class InfoTableViewCell: UITableViewCell {
     @IBOutlet weak var labelCity: UILabel!
@@ -14,14 +15,20 @@ class InfoTableViewCell: UITableViewCell {
     @IBOutlet weak var labelDate: UILabel!
     @IBOutlet weak var button: UIButton!
     
+    var delegate: ClickDetals?
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        _ = button.rx.tap.bind{
+            if let name = self.labelCity.text{
+                self.delegate?.clickDetals(name: name.replacingOccurrences(of: ",", with: "", options: .literal, range: nil))
+            }
+        }
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
         // Configure the view for the selected state
     }
     
