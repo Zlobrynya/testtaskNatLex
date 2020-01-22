@@ -10,4 +10,5 @@ target 'testtaskNatLex' do
   pod 'RxCocoa'
   pod 'SwiftyJSON', '~> 4.0'
   pod 'Alamofire'
+  pod 'SwiftCharts', '~> 0.6.5'
 end

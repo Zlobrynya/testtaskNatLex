@@ -8,9 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		88AAD8403B94E572A6942ED5 /* Pods_testtaskNatLex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE1E80BB737C6BE576A2D4E2 /* Pods_testtaskNatLex.framework */; };
-		CE9354B123D7125C0066D182 /* ModelTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9354B023D7125C0066D182 /* ModelTableView.swift */; };
+		CE02B33723D8603E00A9897E /* ModelWeather.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE02B33623D8603E00A9897E /* ModelWeather.swift */; };
+		CE0C51E623D84C66001765AF /* CoreModelWeather.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CE0C51E423D84C66001765AF /* CoreModelWeather.xcdatamodeld */; };
+		CE0C51F123D84FDA001765AF /* AcessCodeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0C51F023D84FD9001765AF /* AcessCodeData.swift */; };
+		CE0C51F423D85033001765AF /* Weather+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0C51F223D85032001765AF /* Weather+CoreDataClass.swift */; };
+		CE0C51F523D85033001765AF /* Weather+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0C51F323D85033001765AF /* Weather+CoreDataProperties.swift */; };
 		CE9354B323D715A10066D182 /* ServerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9354B223D715A10066D182 /* ServerModel.swift */; };
-		CE9354B523D71C740066D182 /* ModelWeather.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9354B423D71C740066D182 /* ModelWeather.swift */; };
 		CE9354B723D71F900066D182 /* MainModelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9354B623D71F900066D182 /* MainModelView.swift */; };
 		CED3D7D823D6FFE400245B17 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED3D7D723D6FFE400245B17 /* AppDelegate.swift */; };
 		CED3D7DA23D6FFE400245B17 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED3D7D923D6FFE400245B17 /* SceneDelegate.swift */; };
@@ -24,9 +27,12 @@
 /* Begin PBXFileReference section */
 		AE1E80BB737C6BE576A2D4E2 /* Pods_testtaskNatLex.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_testtaskNatLex.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA0DB29925B958F9F5607653 /* Pods-testtaskNatLex.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-testtaskNatLex.release.xcconfig"; path = "Target Support Files/Pods-testtaskNatLex/Pods-testtaskNatLex.release.xcconfig"; sourceTree = "<group>"; };
-		CE9354B023D7125C0066D182 /* ModelTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelTableView.swift; sourceTree = "<group>"; };
+		CE02B33623D8603E00A9897E /* ModelWeather.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelWeather.swift; sourceTree = "<group>"; };
+		CE0C51E523D84C66001765AF /* CoreModelWeather.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreModelWeather.xcdatamodel; sourceTree = "<group>"; };
+		CE0C51F023D84FD9001765AF /* AcessCodeData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AcessCodeData.swift; sourceTree = "<group>"; };
+		CE0C51F223D85032001765AF /* Weather+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Weather+CoreDataClass.swift"; sourceTree = "<group>"; };
+		CE0C51F323D85033001765AF /* Weather+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Weather+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		CE9354B223D715A10066D182 /* ServerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerModel.swift; sourceTree = "<group>"; };
-		CE9354B423D71C740066D182 /* ModelWeather.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelWeather.swift; sourceTree = "<group>"; };
 		CE9354B623D71F900066D182 /* MainModelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainModelView.swift; sourceTree = "<group>"; };
 		CED3D7D423D6FFE400245B17 /* testtaskNatLex.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = testtaskNatLex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CED3D7D723D6FFE400245B17 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -69,12 +75,22 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		CE0C51E323D84BE9001765AF /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				CE0C51F223D85032001765AF /* Weather+CoreDataClass.swift */,
+				CE0C51F323D85033001765AF /* Weather+CoreDataProperties.swift */,
+				CE0C51F023D84FD9001765AF /* AcessCodeData.swift */,
+				CE0C51E423D84C66001765AF /* CoreModelWeather.xcdatamodeld */,
+			);
+			path = CoreData;
+			sourceTree = "<group>";
+		};
 		CE9354AF23D7124E0066D182 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				CE9354B023D7125C0066D182 /* ModelTableView.swift */,
+				CE02B33623D8603E00A9897E /* ModelWeather.swift */,
 				CE9354B223D715A10066D182 /* ServerModel.swift */,
-				CE9354B423D71C740066D182 /* ModelWeather.swift */,
 				CE9354B623D71F900066D182 /* MainModelView.swift */,
 			);
 			path = Model;
@@ -101,6 +117,7 @@
 		CED3D7D623D6FFE400245B17 /* testtaskNatLex */ = {
 			isa = PBXGroup;
 			children = (
+				CE0C51E323D84BE9001765AF /* CoreData */,
 				CE9354AF23D7124E0066D182 /* Model */,
 				CED3D7ED23D7092E00245B17 /* View */,
 				CED3D7EC23D700A000245B17 /* ViewController */,
@@ -253,12 +270,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE0C51E623D84C66001765AF /* CoreModelWeather.xcdatamodeld in Sources */,
+				CE0C51F423D85033001765AF /* Weather+CoreDataClass.swift in Sources */,
 				CE9354B323D715A10066D182 /* ServerModel.swift in Sources */,
+				CE0C51F123D84FDA001765AF /* AcessCodeData.swift in Sources */,
 				CED3D7DC23D6FFE400245B17 /* MainVC.swift in Sources */,
-				CE9354B123D7125C0066D182 /* ModelTableView.swift in Sources */,
+				CE02B33723D8603E00A9897E /* ModelWeather.swift in Sources */,
 				CED3D7F523D711A500245B17 /* InfoTableViewCell.swift in Sources */,
 				CED3D7D823D6FFE400245B17 /* AppDelegate.swift in Sources */,
-				CE9354B523D71C740066D182 /* ModelWeather.swift in Sources */,
+				CE0C51F523D85033001765AF /* Weather+CoreDataProperties.swift in Sources */,
 				CED3D7DA23D6FFE400245B17 /* SceneDelegate.swift in Sources */,
 				CE9354B723D71F900066D182 /* MainModelView.swift in Sources */,
 			);
@@ -462,6 +482,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		CE0C51E423D84C66001765AF /* CoreModelWeather.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				CE0C51E523D84C66001765AF /* CoreModelWeather.xcdatamodel */,
+			);
+			currentVersion = CE0C51E523D84C66001765AF /* CoreModelWeather.xcdatamodel */;
+			path = CoreModelWeather.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = CED3D7CC23D6FFE400245B17 /* Project object */;
 }

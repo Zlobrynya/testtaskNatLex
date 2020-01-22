@@ -12,6 +12,7 @@ class InfoTableViewCell: UITableViewCell {
     @IBOutlet weak var labelCity: UILabel!
     @IBOutlet weak var labelTemp: UILabel!
     @IBOutlet weak var labelDate: UILabel!
+    @IBOutlet weak var button: UIButton!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -22,6 +23,22 @@ class InfoTableViewCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
+    }
+    
+    func setData(model: ModelWeather, isF: Bool){
+        labelCity.text = model.name + ","
+        var temp = model.temp
+        if isF{
+            temp *= 32
+            labelTemp.text = String(temp) + "˚F"
+        }else{
+            labelTemp.text = String(temp) + "˚C"
+        }
+        
+        let dateFormatterPrint = DateFormatter()
+        dateFormatterPrint.dateFormat = "dd.MM.yyyy HH:mm:ss"
+        labelDate.text = dateFormatterPrint.string(from: model.time)
+        button.isHidden = model.countUnique == 1
     }
 
 }

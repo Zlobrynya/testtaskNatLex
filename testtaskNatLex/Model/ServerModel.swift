@@ -16,13 +16,25 @@ class ServerModel {
     private var url = "https://api.openweathermap.org/data/2.5/weather?"
     
     func getWeatherAtCity(_ city: String) -> Observable<ModelWeather>?{
+        let parameters:[String:String] = ["q":city,
+                                          "units": "metric",
+                                          "appid":self.apiKey]//units=metric
+        return getWeather(parameters: parameters)
+    }
+
+    func getWeatherByCoord(lat: String, lon: String) -> Observable<ModelWeather>?{
+        let parameters:[String:String] = ["lat":lat,
+                                          "lon": lon,
+                                          "units": "metric",
+                                          "appid":self.apiKey]
+        return getWeather(parameters: parameters)
+    }
+    
+    private func getWeather(parameters:[String:String]) -> Observable<ModelWeather>?{
         return Observable<ModelWeather>.create({observer in
-            let parameters:[String:String] = ["q":city,
-                                              "appid":self.apiKey]
             Alamofire.request(self.url, method: .get, parameters: parameters)
                 .validate()
                 .response { response in
-                    print("response.data \(response.error)")
                     if let error = response.error{
                         observer.onError(error)
                         return observer.onCompleted()
@@ -48,7 +60,6 @@ class ServerModel {
                         print("some thing went wrong.")
                     }
             }
-
             return Disposables.create();
         })
     }
