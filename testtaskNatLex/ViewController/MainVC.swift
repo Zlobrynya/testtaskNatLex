@@ -180,6 +180,10 @@ extension MainVC: UITableViewDelegate, UITableViewDataSource{
         }
         return UITableViewCell()
     }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 64
+    }
 }
 
 extension MainVC: ClickDetals{
