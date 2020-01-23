@@ -19,7 +19,9 @@ class MainModelView {
                 return
             }
             if let modelCity = modelCity{
-                self.subscribeObservable(modelCity)
+                if !modelCity.name.isEmpty{
+                    self.subscribeObservable(modelCity)
+                }
             }
             completionHandler(nil)
         }

@@ -44,7 +44,7 @@ class MainVC: UIViewController {
     
     private func initLocation(){
         self.locationManager.requestAlwaysAuthorization()
-        
+
         if CLLocationManager.locationServicesEnabled() {
             locationManager.delegate = self
             locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
@@ -87,6 +87,7 @@ class MainVC: UIViewController {
     }
     
     @IBAction func clickLoc(_ sender: Any) {
+        clickRequestPermission()
         locationManager.delegate = self
         locationManager.startUpdatingLocation()
     }
@@ -96,6 +97,33 @@ class MainVC: UIViewController {
         //tableView.reloadData()
         vm.updateInfo(isFarengate: isF){ _ in
             self.updateUI()
+        }
+    }
+    
+    func clickRequestPermission() {
+        if CLLocationManager.locationServicesEnabled() {
+            switch CLLocationManager.authorizationStatus() {
+            case .denied:
+                guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                    return
+                }
+
+                if UIApplication.shared.canOpenURL(settingsUrl) {
+                    UIApplication.shared.open(settingsUrl, completionHandler: { (success) in
+                        print("Settings opened: \(success)") // Prints true
+                    })
+                }
+                break
+            case .notDetermined, .restricted:
+                locationManager.requestWhenInUseAuthorization()
+            case .authorizedAlways, .authorizedWhenInUse:
+                break
+            @unknown default:
+                break;
+            }
+            
+        } else {
+            print("Location services are not enabled")
         }
     }
 }
@@ -118,6 +146,20 @@ extension MainVC: CLLocationManagerDelegate{
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Failed to find user's location: \(error.localizedDescription)")
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        print("status \(status)")
+        switch status {
+        case .notDetermined, .restricted, .denied:
+            locationManager.requestWhenInUseAuthorization()
+            break
+        case .authorizedAlways, .authorizedWhenInUse:
+            break
+        @unknown default:
+            break
+        }
+        updateUI()
     }
 }
 
