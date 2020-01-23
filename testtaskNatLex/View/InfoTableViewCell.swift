@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import RxCocoa
 
 class InfoTableViewCell: UITableViewCell {
     @IBOutlet weak var labelCity: UILabel!
@@ -19,12 +18,6 @@ class InfoTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
-        _ = button.rx.tap.bind{
-            if let name = self.labelCity.text{
-                self.delegate?.clickDetals(name: name.replacingOccurrences(of: ",", with: "", options: .literal, range: nil))
-            }
-        }
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -42,4 +35,9 @@ class InfoTableViewCell: UITableViewCell {
         button.isHidden = model.countUnique == 1
     }
 
+    @IBAction func clickInfo(_ sender: Any) {
+        if let name = self.labelCity.text{
+            self.delegate?.clickDetals(name: name.replacingOccurrences(of: ",", with: "", options: .literal, range: nil))
+        }
+    }
 }

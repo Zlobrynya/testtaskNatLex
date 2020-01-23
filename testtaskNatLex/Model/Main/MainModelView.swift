@@ -7,65 +7,54 @@
 //
 
 import Foundation
-import RxSwift
 
 class MainModelView {
-    var modelWeather: PublishSubject<ModelWeather>? = PublishSubject()
-    var error: PublishSubject<Error>? = PublishSubject()
-    var lastModelsWeather: ReplaySubject<[ModelWeather]>? = ReplaySubject.create(bufferSize: 2)
-    private var modelsWeather = [ModelWeather]()
-    private var modelWeatherOnMain = ModelWeather()
+    var modelsWeather = [ModelWeather]()
+    var modelWeatherOnMain = ModelWeather()
     
-    init() {
-        getLastData()
-    }
-    
-    func getWeatherCity(_ city: String){
-        if let obs = ServerModel().getWeatherAtCity(city){
-            subscribeObservable(obs)
+    func getWeatherCity(_ city: String, completionHandler: @escaping (Error?) -> ()){
+        ServerModel().getWeatherAtCity(city){ modelCity, error in
+            if let modelCity = modelCity{
+                self.subscribeObservable(modelCity)
+            }
+            completionHandler(error)
         }
     }
     
-    func getWeatherByCoord(lat: String, lon: String){
-        if let obs = ServerModel().getWeatherByCoord(lat: lat, lon: lon){
-            subscribeObservable(obs)
+    func getWeatherByCoord(lat: String, lon: String, completionHandler: @escaping (Error?) -> ()){
+        
+        ServerModel().getWeatherByCoord(lat: lat, lon: lon){ modelCity, error in
+            if let modelCity = modelCity{
+                self.subscribeObservable(modelCity)
+            }
+            completionHandler(error)
         }
     }
     
-    func getLastData(){
+    func getLastData(completionHandler: @escaping (Bool?) -> ()){
         let weathers = AcessCodeData.sharedInstance.getLastCoreData()
-        lastModelsWeather?.onNext(weathers)
         modelsWeather += weathers
+        print("modelsWeather \(modelsWeather.count)")
+        completionHandler(true)
     }
     
-    func updateInfo(isFarengate: Bool){
+    func updateInfo(isFarengate: Bool, completionHandler: @escaping (Bool?) -> ()){
         for item in modelsWeather{
             item.changeMetric(isFarengate: isFarengate)
         }
-        self.modelWeather?.onNext(modelWeatherOnMain)
-        self.lastModelsWeather?.onNext(modelsWeather)
+        completionHandler(true)
     }
     
-    private func subscribeObservable(_ observable: Observable<ModelWeather>){
-        _ = observable.subscribe{ event in
-            if let error = event.error{
-                self.error?.onNext(error)
-            }
-            
-            if let element = event.element{
-                self.modelWeather?.onNext(element)
-                self.modelWeatherOnMain = element
-                AcessCodeData.sharedInstance.addPostToCoreData(model: element)
-                // Замена и обновление таблицы
-                if let item = self.modelsWeather.firstIndex(where: { $0.name == element.name }){
-                    var locEl = element
-                    locEl.countUnique = self.modelsWeather[item].countUnique + 1
-                    self.modelsWeather[item] = locEl
-                }else{
-                    self.modelsWeather.append(element)
-                }
-                self.lastModelsWeather?.onNext(self.modelsWeather)
-            }
+    private func subscribeObservable(_ modelCity: ModelWeather){
+        self.modelWeatherOnMain = modelCity
+        AcessCodeData.sharedInstance.addPostToCoreData(model: modelCity)
+        // Замена и обновление таблицы
+        if let item = self.modelsWeather.firstIndex(where: { $0.name == modelCity.name }){
+            let locEl = modelCity
+            locEl.countUnique = self.modelsWeather[item].countUnique + 1
+            self.modelsWeather[item] = locEl
+        }else{
+            self.modelsWeather.append(modelCity)
         }
     }
 }

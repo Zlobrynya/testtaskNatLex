@@ -7,8 +7,6 @@
 //
 
 import UIKit
-import RxCocoa
-import RxSwift
 import CoreLocation
 
 protocol ClickDetals {
@@ -23,7 +21,6 @@ class MainVC: UIViewController {
     @IBOutlet weak var mainViewInfo: UIView!
     
     private var search = UISearchController(searchResultsController: nil)
-    private let disposeBag = DisposeBag()
     private let vm = MainModelView()
     private let locationManager = CLLocationManager()
     private var isF = false
@@ -33,82 +30,59 @@ class MainVC: UIViewController {
         // Do any additional setup after loading the view.
         setupNavigationBar()
         initLocation()
-        bindMainInfo()
-        bindTable()
-    }
-    
-    private func bindTable(){
-        tableView.rx.setDelegate(self).disposed(by: disposeBag)
-        vm.lastModelsWeather?.bind(to: tableView.rx.items(cellIdentifier: "infoCell")){ row, model, cell in
-            if let cell = cell as? InfoTableViewCell{
-                cell.delegate = self
-                cell.setData(model: model, isF: self.isF)
-            }
-        }.disposed(by: disposeBag)
-    }
-    
-    private func bindMainInfo(){
-        search.searchBar.rx.searchButtonClicked
-            .asDriver(onErrorJustReturn: ())
-            .drive(onNext: { _ in
-                if let city = self.search.searchBar.text{
-                    self.vm.getWeatherCity(city)
-                }
-            }).disposed(by: disposeBag)
-        
-        vm.modelWeather?.map{ $0.name }.bind(to: labelNameCity.rx.text).disposed(by: disposeBag)
-        vm.modelWeather?.map{
-            return self.isF ? String($0.temp) + "˚F" : String($0.temp) + "˚C"
-        }.bind(to: labelTemperature.rx.text).disposed(by: disposeBag)
-        
-        _ = vm.modelWeather?.subscribe{ event in
-            if let element = event.element{
-                let first = self.isF ? Double(10).conventToFarengate() : 10
-                let second = self.isF ? Double(25).conventToFarengate() : 25
-                let last = self.isF ? Double(10000).conventToFarengate() : 10000
-                
-                print("first \(first) \(second) \(element.temp)")
-                
-                switch element.temp {
-                case ..<first:
-                    self.mainViewInfo.backgroundColor = #colorLiteral(red: 0.4745098054, green: 0.8392156959, blue: 0.9764705896, alpha: 1)
-                    break
-                case first...second:
-                    self.mainViewInfo.backgroundColor = #colorLiteral(red: 1, green: 0.6470588235, blue: 0, alpha: 1)
-                    break
-                case second..<last:
-                    self.mainViewInfo.backgroundColor = #colorLiteral(red: 1, green: 0.02745098062, blue: 0, alpha: 1)
-                    break
-                default:
-                    self.mainViewInfo.backgroundColor = #colorLiteral(red: 0.4851023555, green: 0.2691538334, blue: 0.9763388038, alpha: 1)
-                    break
-                }
-            }
-        }
-        
-        _ = vm.error?.subscribe{ error in
-            if let text = error.element?.localizedDescription{
-                let alert = UIAlertController(title: "Error", message: text, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Close", style: .cancel, handler: nil))
-                self.present(alert, animated: true)
-            }
+        tableView.delegate = self
+        tableView.dataSource = self
+        vm.getLastData(){ _ in
+            self.tableView.reloadData()
         }
     }
-    
     
     private func setupNavigationBar() {
         self.navigationItem.searchController = search
+        search.searchBar.delegate = self
     }
     
     private func initLocation(){
-        // Ask for Authorisation from the User.
         self.locationManager.requestAlwaysAuthorization()
         
         if CLLocationManager.locationServicesEnabled() {
             locationManager.delegate = self
             locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
             locationManager.startUpdatingLocation()
-            //locationManager.requestLocation()
+        }
+    }
+    
+    func updateUI(){
+        labelNameCity.text = vm.modelWeatherOnMain.name
+        labelTemperature.text = self.isF ? String(vm.modelWeatherOnMain.temp) + "˚F" : String(vm.modelWeatherOnMain.temp) + "˚C"
+        updateMainUI()
+        tableView.reloadData()
+    }
+    
+    func showError(error: Error){
+        let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Close", style: .cancel, handler: nil))
+        self.present(alert, animated: true)
+    }
+    
+    private func updateMainUI(){
+        let first = self.isF ? Double(10).conventToFarengate() : 10
+        let second = self.isF ? Double(25).conventToFarengate() : 25
+        let last = self.isF ? Double(10000).conventToFarengate() : 10000
+                
+        switch vm.modelWeatherOnMain.temp {
+        case ..<first:
+            self.mainViewInfo.backgroundColor = #colorLiteral(red: 0.4745098054, green: 0.8392156959, blue: 0.9764705896, alpha: 1)
+            break
+        case first...second:
+            self.mainViewInfo.backgroundColor = #colorLiteral(red: 1, green: 0.6470588235, blue: 0, alpha: 1)
+            break
+        case second..<last:
+            self.mainViewInfo.backgroundColor = #colorLiteral(red: 1, green: 0.02745098062, blue: 0, alpha: 1)
+            break
+        default:
+            self.mainViewInfo.backgroundColor = #colorLiteral(red: 0.4851023555, green: 0.2691538334, blue: 0.9763388038, alpha: 1)
+            break
         }
     }
     
@@ -120,7 +94,9 @@ class MainVC: UIViewController {
     @IBAction func switchMetric(_ sender: UISwitch) {
         isF = !sender.isOn
         //tableView.reloadData()
-        vm.updateInfo(isFarengate: isF)
+        vm.updateInfo(isFarengate: isF){ _ in
+            self.updateUI()
+        }
     }
 }
 
@@ -131,7 +107,13 @@ extension MainVC: CLLocationManagerDelegate{
         locationManager.stopUpdatingLocation()
         locationManager.delegate = nil
         print("locations = \(locValue.latitude) \(locValue.longitude)")
-        self.vm.getWeatherByCoord(lat: String(locValue.latitude), lon: String(locValue.longitude))
+        self.vm.getWeatherByCoord(lat: String(locValue.latitude), lon: String(locValue.longitude)){ error in
+            if let error = error {
+                self.showError(error: error)
+                return
+            }
+            self.updateUI()
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -139,9 +121,22 @@ extension MainVC: CLLocationManagerDelegate{
     }
 }
 
-extension MainVC: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 64
+extension MainVC: UITableViewDelegate, UITableViewDataSource{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        print("tableView(_ tableView: UITableView, \(vm.modelsWeather.count)")
+        return vm.modelsWeather.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "infoCell", for: indexPath) as? InfoTableViewCell{
+            print("tableView(_ cellForRowAt: UITableView, \(vm.modelsWeather[indexPath.row].name)")
+            if indexPath.row < vm.modelsWeather.count {
+                cell.delegate = self
+                cell.setData(model: vm.modelsWeather[indexPath.row], isF: self.isF)
+            }
+            return cell
+        }
+        return UITableViewCell()
     }
 }
 
@@ -151,6 +146,16 @@ extension MainVC: ClickDetals{
             vc.nameCity = name
             vc.isFarengate = isF
             navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+}
+
+extension MainVC: UISearchBarDelegate{
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar){
+        if let city = self.search.searchBar.text{
+            self.vm.getWeatherCity(city){ _ in
+                self.updateUI()
+            }
         }
     }
 }

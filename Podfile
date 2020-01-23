@@ -6,8 +6,6 @@ target 'testtaskNatLex' do
   use_frameworks!
 
   # Pods for testtaskNatLex
-  pod 'RxSwift'
-  pod 'RxCocoa'
   pod 'SwiftyJSON', '~> 4.0'
   pod 'Alamofire'
   pod 'Charts'

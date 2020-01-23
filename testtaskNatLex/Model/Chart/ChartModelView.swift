@@ -7,32 +7,21 @@
 //
 
 import Foundation
-import RxSwift
 
-class ChartModelView {    
-    var modelsWeatherSubject: ReplaySubject<[ModelWeather]>? = ReplaySubject.create(bufferSize: 2)
-    
+class ChartModelView {
     var modelsWeather = [ModelWeather]()
     
-    init() {
-
-    }
-    
-    func getData(city nameCity: String, isFarengate: Bool){
-        let observ = AcessCodeData.sharedInstance.getWeatherHistory(city: nameCity)
-        _ = observ.subscribe({ event in
-            if let element = event.element{
+    func getData(city nameCity: String, isFarengate: Bool, completionHandler: @escaping (Error?) -> ()){
+        AcessCodeData.sharedInstance.getWeatherHistory(city: nameCity) { models, error in
+            if let models = models{
                 if isFarengate{
-                    for item in element{
+                    for item in models{
                         item.changeMetric(isFarengate: isFarengate)
                     }
                 }
-
-                self.modelsWeatherSubject?.onNext(element)
-                self.modelsWeather = element
+                self.modelsWeather = models
             }
-        })
+            completionHandler(error)
+        }
     }
-    
-    
 }

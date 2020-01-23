@@ -7,8 +7,6 @@
 //
 
 import UIKit
-import RxCocoa
-import RxSwift
 import Charts
 
 class ChartVC: UIViewController {
@@ -22,7 +20,6 @@ class ChartVC: UIViewController {
     
     private let vm = ChartModelView()
     private var isOpenPicker = false
-    private let disposeBag = DisposeBag()
     private var selectButton: UIButton? = nil
     private var indexStart = 0
     private var indexStop = 0
@@ -31,73 +28,22 @@ class ChartVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         datePicker.isHidden = true
-        
-        _ = buttonEnd.rx.tap.bind{
-            self.isOpenPicker = true
-            self.datePicker.isHidden = !self.isOpenPicker
-            self.selectButton = self.buttonEnd
-            self.datePicker.selectRow(self.indexStop, inComponent: 0, animated: false)
-        }
-        
-        _ = buttonStart.rx.tap.bind{
-            self.isOpenPicker = true
-            self.datePicker.isHidden = !self.isOpenPicker
-            self.selectButton = self.buttonStart
-            self.datePicker.selectRow(self.indexStart, inComponent: 0, animated: false)
-        }
-        
-        _ = vm.modelsWeatherSubject?.subscribe({ event in
-            if let elements = event.element{
-                self.indexStop = elements.count
-                let dateFormatterPrint = DateFormatter()
-                dateFormatterPrint.dateFormat = "dd.MM.yyyy HH:mm:ss"
-                self.buttonStart.setTitle(dateFormatterPrint.string(from: elements[0].time), for: .normal)
-                self.buttonEnd.setTitle(dateFormatterPrint.string(from: elements[elements.count-1].time), for: .normal)
-
-                self.drawChart(element: elements)
-                //self.datePicker.
+        datePicker.delegate = self
+        datePicker.dataSource = self
+        vm.getData(city: nameCity, isFarengate: isFarengate){ error in
+            if let error = error{
+                return
             }
-        })
-        
-        vm.modelsWeatherSubject?.bind(to: datePicker.rx.itemTitles) { (row, element) in
+            self.indexStop = self.vm.modelsWeather.count
             let dateFormatterPrint = DateFormatter()
             dateFormatterPrint.dateFormat = "dd.MM.yyyy HH:mm:ss"
-            return dateFormatterPrint.string(from: element.time)
-        }.disposed(by: disposeBag)
-        
-        datePicker.rx.itemSelected.subscribe { (event) in
-            switch event {
-            case .next(let selected):
-                let dateFormatterPrint = DateFormatter()
-                dateFormatterPrint.dateFormat = "dd.MM.yyyy HH:mm:ss"
-                let str = dateFormatterPrint.string(from: self.vm.modelsWeather[selected.row].time)
-                self.selectButton?.setTitle(str, for: .normal)
-                
-                if self.selectButton == self.buttonEnd{
-                    self.indexStop = selected.row + 1
-                } else if self.selectButton == self.buttonStart{
-                    self.indexStart = selected.row
-                }
-                
-                if self.indexStart < self.indexStop{
-                    self.isOpenPicker = false
-                    self.datePicker.isHidden = !self.isOpenPicker
-                    self.selectButton = nil
-                    self.drawChart(element: self.vm.modelsWeather)
-                }
-            default:
-                break
-            }
-        }.disposed(by: disposeBag)
-        
+            self.buttonStart.setTitle(dateFormatterPrint.string(from: self.vm.modelsWeather[0].time), for: .normal)
+            self.buttonEnd.setTitle(dateFormatterPrint.string(from: self.vm.modelsWeather[self.vm.modelsWeather.count-1].time), for: .normal)
+            self.datePicker.reloadAllComponents()
+            self.drawChart(element: self.vm.modelsWeather)
+        }
     }
-    
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        vm.getData(city: nameCity, isFarengate: isFarengate)
-    }
-    
+
     
     private func drawChart(element: [ModelWeather]){
         var lineChartEntry  = [ChartDataEntry]()
@@ -106,7 +52,6 @@ class ChartVC: UIViewController {
         var arrayX = [String]()
 
         //here is the for loop
-        print("indexStart \(indexStart)  indexStop \(indexStop)")
         for i in indexStart..<indexStop {
             lineChartEntry.append(ChartDataEntry(x: Double(i) , y: Double(element[i].temp)))
             lineChartEntryTempMax.append(ChartDataEntry(x: Double(i) , y: Double(element[i].tempMax)))
@@ -135,6 +80,59 @@ class ChartVC: UIViewController {
         
         chartView.xAxis.centerAxisLabelsEnabled = false
         chartView.data = data
+    }
+    
+    @IBAction func clickStart(_ sender: Any) {
+        self.isOpenPicker = true
+        self.datePicker.isHidden = !self.isOpenPicker
+        self.selectButton = self.buttonStart
+        self.datePicker.selectRow(self.indexStart, inComponent: 0, animated: false)
+    }
+    
+    @IBAction func clickEnd(_ sender: Any) {
+        self.isOpenPicker = true
+        self.datePicker.isHidden = !self.isOpenPicker
+        self.selectButton = self.buttonEnd
+        self.datePicker.selectRow(self.indexStop, inComponent: 0, animated: false)
+    }
+}
+
+extension ChartVC: UIPickerViewDelegate{
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int){
+        let dateFormatterPrint = DateFormatter()
+        dateFormatterPrint.dateFormat = "dd.MM.yyyy HH:mm:ss"
+        let str = dateFormatterPrint.string(from: self.vm.modelsWeather[row].time)
+        self.selectButton?.setTitle(str, for: .normal)
+        
+        if self.selectButton == self.buttonEnd{
+            self.indexStop = row + 1
+        } else if self.selectButton == self.buttonStart{
+            self.indexStart = row
+        }
+        
+        if self.indexStart < self.indexStop{
+            self.isOpenPicker = false
+            self.datePicker.isHidden = !self.isOpenPicker
+            self.selectButton = nil
+            self.drawChart(element: self.vm.modelsWeather)
+        }
+    }
+}
+
+extension ChartVC: UIPickerViewDataSource{
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+         return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return vm.modelsWeather.count
+    }
+    
+    // The data to return fopr the row and component (column) that's being passed in
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        let dateFormatterPrint = DateFormatter()
+        dateFormatterPrint.dateFormat = "dd.MM.yyyy HH:mm:ss"
+        return dateFormatterPrint.string(from: vm.modelsWeather[row].time)
     }
 }
 
