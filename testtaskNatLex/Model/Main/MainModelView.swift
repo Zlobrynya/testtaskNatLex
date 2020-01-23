@@ -14,10 +14,14 @@ class MainModelView {
     
     func getWeatherCity(_ city: String, completionHandler: @escaping (Error?) -> ()){
         ServerModel().getWeatherAtCity(city){ modelCity, error in
+            if let error = error{
+                completionHandler(error)
+                return
+            }
             if let modelCity = modelCity{
                 self.subscribeObservable(modelCity)
             }
-            completionHandler(error)
+            completionHandler(nil)
         }
     }
     

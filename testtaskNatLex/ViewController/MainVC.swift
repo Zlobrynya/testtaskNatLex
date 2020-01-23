@@ -153,8 +153,14 @@ extension MainVC: ClickDetals{
 extension MainVC: UISearchBarDelegate{
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar){
         if let city = self.search.searchBar.text{
-            self.vm.getWeatherCity(city){ _ in
-                self.updateUI()
+            self.vm.getWeatherCity(city){ error in
+                if let error = error{
+                    self.showError(error: error)
+                }else{
+                    if !self.vm.modelWeatherOnMain.name.isEmpty{
+                        self.updateUI()
+                    }
+                }
             }
         }
     }
