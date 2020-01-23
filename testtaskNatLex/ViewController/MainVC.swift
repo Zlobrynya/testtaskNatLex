@@ -115,12 +115,40 @@ class MainVC: UIViewController {
     @IBAction func clickLoc(_ sender: Any) {
         locationManager.delegate = self
         locationManager.startUpdatingLocation()
+        clickRequestPermission()
     }
     
     @IBAction func switchMetric(_ sender: UISwitch) {
         isF = !sender.isOn
         //tableView.reloadData()
         vm.updateInfo(isFarengate: isF)
+    }
+    
+    func clickRequestPermission() {
+        if CLLocationManager.locationServicesEnabled() {
+            switch CLLocationManager.authorizationStatus() {
+            case .denied:
+                guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                    return
+                }
+
+                if UIApplication.shared.canOpenURL(settingsUrl) {
+                    UIApplication.shared.open(settingsUrl, completionHandler: { (success) in
+                        print("Settings opened: \(success)") // Prints true
+                    })
+                }
+                break
+            case .notDetermined, .restricted:
+                locationManager.requestWhenInUseAuthorization()
+            case .authorizedAlways, .authorizedWhenInUse:
+                break
+            @unknown default:
+                break;
+            }
+            
+        } else {
+            print("Location services are not enabled")
+        }
     }
 }
 
