@@ -34,13 +34,7 @@ class InfoTableViewCell: UITableViewCell {
     
     func setData(model: ModelWeather, isF: Bool){
         labelCity.text = model.name + ","
-        var temp = model.temp
-        if isF{
-            temp *= 32
-            labelTemp.text = String(temp) + "˚F"
-        }else{
-            labelTemp.text = String(temp) + "˚C"
-        }
+        labelTemp.text = isF ? String(model.temp) + "˚F" : String(model.temp) + "˚C"
         
         let dateFormatterPrint = DateFormatter()
         dateFormatterPrint.dateFormat = "dd.MM.yyyy HH:mm:ss"

@@ -18,10 +18,16 @@ class ChartModelView {
 
     }
     
-    func getData(city nameCity: String){
+    func getData(city nameCity: String, isFarengate: Bool){
         let observ = AcessCodeData.sharedInstance.getWeatherHistory(city: nameCity)
-        observ.subscribe({ event in
+        _ = observ.subscribe({ event in
             if let element = event.element{
+                if isFarengate{
+                    for item in element{
+                        item.changeMetric(isFarengate: isFarengate)
+                    }
+                }
+
                 self.modelsWeatherSubject?.onNext(element)
                 self.modelsWeather = element
             }

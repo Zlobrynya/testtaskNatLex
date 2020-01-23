@@ -58,25 +58,25 @@ class MainVC: UIViewController {
         
         vm.modelWeather?.map{ $0.name }.bind(to: labelNameCity.rx.text).disposed(by: disposeBag)
         vm.modelWeather?.map{
-            var temp = $0.temp
-            if self.isF{
-                temp *= 32
-                return String(temp) + "˚F"
-            }else{
-                return String(temp) + "˚C"
-            }
+            return self.isF ? String($0.temp) + "˚F" : String($0.temp) + "˚C"
         }.bind(to: labelTemperature.rx.text).disposed(by: disposeBag)
         
         _ = vm.modelWeather?.subscribe{ event in
             if let element = event.element{
+                let first = self.isF ? Double(10).conventToFarengate() : 10
+                let second = self.isF ? Double(25).conventToFarengate() : 25
+                let last = self.isF ? Double(10000).conventToFarengate() : 10000
+                
+                print("first \(first) \(second) \(element.temp)")
+                
                 switch element.temp {
-                case -100..<10:
+                case ..<first:
                     self.mainViewInfo.backgroundColor = #colorLiteral(red: 0.4745098054, green: 0.8392156959, blue: 0.9764705896, alpha: 1)
                     break
-                case 10...25:
+                case first...second:
                     self.mainViewInfo.backgroundColor = #colorLiteral(red: 1, green: 0.6470588235, blue: 0, alpha: 1)
                     break
-                case 100..<25:
+                case second..<last:
                     self.mainViewInfo.backgroundColor = #colorLiteral(red: 1, green: 0.02745098062, blue: 0, alpha: 1)
                     break
                 default:
@@ -95,6 +95,7 @@ class MainVC: UIViewController {
         }
     }
     
+    
     private func setupNavigationBar() {
         self.navigationItem.searchController = search
     }
@@ -102,8 +103,7 @@ class MainVC: UIViewController {
     private func initLocation(){
         // Ask for Authorisation from the User.
         self.locationManager.requestAlwaysAuthorization()
-
-
+        
         if CLLocationManager.locationServicesEnabled() {
             locationManager.delegate = self
             locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
@@ -119,8 +119,8 @@ class MainVC: UIViewController {
     
     @IBAction func switchMetric(_ sender: UISwitch) {
         isF = !sender.isOn
-        tableView.reloadData()
-        vm.updateInfo()
+        //tableView.reloadData()
+        vm.updateInfo(isFarengate: isF)
     }
 }
 
@@ -148,8 +148,8 @@ extension MainVC: UITableViewDelegate {
 extension MainVC: ClickDetals{
     func clickDetals(name: String) {
         if let vc = self.storyboard?.instantiateViewController(withIdentifier: "ChartVC") as? ChartVC{
-            print("nameCity \(name)")
             vc.nameCity = name
+            vc.isFarengate = isF
             navigationController?.pushViewController(vc, animated: true)
         }
     }

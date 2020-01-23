@@ -18,6 +18,7 @@ class ChartVC: UIViewController {
     @IBOutlet weak var chartView: LineChartView!
     
     var nameCity = ""
+    var isFarengate = false
     
     private let vm = ChartModelView()
     private var isOpenPicker = false
@@ -94,7 +95,7 @@ class ChartVC: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        vm.getData(city: nameCity)
+        vm.getData(city: nameCity, isFarengate: isFarengate)
     }
     
     

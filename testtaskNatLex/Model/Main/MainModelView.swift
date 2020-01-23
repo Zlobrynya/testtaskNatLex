@@ -38,8 +38,12 @@ class MainModelView {
         modelsWeather += weathers
     }
     
-    func updateInfo(){
+    func updateInfo(isFarengate: Bool){
+        for item in modelsWeather{
+            item.changeMetric(isFarengate: isFarengate)
+        }
         self.modelWeather?.onNext(modelWeatherOnMain)
+        self.lastModelsWeather?.onNext(modelsWeather)
     }
     
     private func subscribeObservable(_ observable: Observable<ModelWeather>){
